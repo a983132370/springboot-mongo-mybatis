@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>上传文件</title>
+</head>
+<body >
+
+    <center>
+        <div style="font-size: 30px;padding-top:50px;"><b>文件上传</b></div>
+        <input type="file" id="fileUp" name="fileUp" style="display: none" multiple/>
+        <div style=" padding-top:10px;"> </div>
+
+        <a href="javascript:void(0)" onclick="choiceFile()">选择文件</a>
+        <a href="javascript:void(0)" onclick="upFile()">文件上传</a>
+        <div>
+            <div id="pro"></div>
+            <div id="speed"></div>
+
+            <div id="total"></div>
+            <div id="time"></div>
+
+        </div>
+    </center>
+<script >
+    function choiceFile(){
+        document.getElementById("fileUp").click();
+    }
+    function upFile(){
+        var objFile = document.getElementById("fileUp");
+        var fileList = objFile.files;
+        var formData = new FormData();//h5 新属性  key values  类似form表单
+        for(var i = 0 ; i < fileList.length ; i++){
+            //fileList[i].name 为文件名  作为key  后台获取
+            formData.append(fileList[i].name,fileList[i]);
+        }
+        //ajax文件上传
+        //ajax 创建核心对象
+        var xhr = new XMLHttpRequest();
+        var oldUpload =0,curUpload = 0,total = 0 ;
+        //添加监听器
+        xhr.upload.addEventListener("progress",function(event){
+            var percent = Math.round(event.loaded/event.total*100);
+            document.getElementById("pro").innerHTML = "已上传 : " + percent +"%";
+
+            total = event.total;
+            curUpload = event.loaded;
+            /*if(oldUpload == 0){
+                total = event.total;
+                oldUpload = event.loaded;
+            } */
+            var result = total - curUpload ;
+            document.getElementById("speed").innerHTML = "剩余 "+Math.round(result / (1024*1024)*100)/100.0+"MB";
+            document.getElementById("total").innerHTML = "总大小: " + Math.round(total/(1024*1024)*100)/100.0 +"MB" ;
+
+        },false);
+        /* var upSpeed = setInterval(function(){
+            if(oldUpload != 0){
+              var result = curUpload - oldUpload ;
+                oldUpload = curUpload;
+                var leave = total - curUpload;
+
+                if(result > (1024*1024)){
+                    document.getElementById("speed").innerHTML = "上传速度"+Math.round(result / (1024*1024)*100)/100.0+"M/S";
+                }else if (result > 1024) {
+                    document.getElementById("speed").innerHTML = "上传速度"+Math.round(result / 1024 *100)/100.0+"KB/S";
+                }else if (result > 0){
+                    document.getElementById("speed").innerHTML = "上传速度"+ result +"BYTE/S";
+                }else{
+                    document.getElementById("speed").innerHTML = "上传完成";
+                }
+                if(result > 0){
+                    document.getElementById("time").innerHTML = "剩余时间"+Math.round(leave / result)+"秒";
+                }else{
+                    clearInterval(upSpeed)
+                }
+            }
+        },1000);*/
+        //打开
+        xhr.open("post","/uploadFile",true);
+        xhr.send(formData);
+
+    }
+
+</script>
+</body>
+</html>
