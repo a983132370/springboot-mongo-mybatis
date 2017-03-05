@@ -11,7 +11,7 @@
 </head>
 <body>
       <div align="center"  style="margin-top: 10%;">
-                请扫描二维码下载<br/>
+                请扫描二维码验证<br/>
           <img src="/loginQrcode" />
       </div>
 <!-- /.container -->
@@ -23,7 +23,7 @@
           success:function(result){
             eval(result);
             if(result){
-               window.location.href = "/toDownFilePage";
+               window.location.href = "/toUploadFilePage";
             }else{
               setTimeout("validate()",1000);
             }
